@@ -28,6 +28,48 @@ A specialized tutor that teaches through **storytelling, contextual hints, and r
 
 ## 3. Architecture & Tech Stack
 
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   │   ├── CircuitBuilder/
+│   │   │   ├── Gamification/
+│   │   │   ├── MascotChat/
+│   │   │   └── Shared/
+│   │   ├── pages/
+│   │   │   ├── Onboarding/
+│   │   │   ├── NewbieJourney/
+│   │   │   ├── Dashboard/
+│   │   │   └── Sandbox/
+│   │   ├── state/
+│   │   │   └── userStore.js
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── package.json
+│   └── .env.example
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── routes/
+│   │   │       ├── circuit.py
+│   │   │       └── mascot.py
+│   │   ├── core/
+│   │   │   ├── config.py
+│   │   │   └── llm_prompts.py
+│   │   ├── schemas/
+│   │   │   ├── circuit_data.py
+│   │   │   └── chat_data.py
+│   │   ├── services/
+│   │   │   ├── qiskit_runner.py
+│   │   │   └── llm_service.py
+│   │   └── main.py
+│   ├── requirements.txt
+│   └── .env.example
+└── README.md
+
 ### 🎨 Frontend
 **React (Vite)** powers the responsive UI, user state management, gamification logic, and visual circuit-building interactions.
 
