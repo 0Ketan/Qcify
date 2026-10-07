@@ -28,6 +28,7 @@ A specialized tutor that teaches through **storytelling, contextual hints, and r
 
 ## 3. Architecture & Tech Stack
 
+```
 ├── frontend/
 │   ├── public/
 │   ├── src/
@@ -69,6 +70,7 @@ A specialized tutor that teaches through **storytelling, contextual hints, and r
 │   ├── requirements.txt
 │   └── .env.example
 └── README.md
+```
 
 ### 🎨 Frontend
 **React (Vite)** powers the responsive UI, user state management, gamification logic, and visual circuit-building interactions.
