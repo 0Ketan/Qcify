@@ -1,0 +1,161 @@
+/* ============================================
+   QUANTUMPAWS — MASCOT (Schrö) STYLES
+   All built with pure CSS shapes + SVG inline
+   ============================================ */
+
+/* ---- BASE SCHRO CAT COMPONENT ---- */
+.schro {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+/* ---- SIZE VARIANTS ---- */
+.schro-48  { width: 48px; height: 60px; }
+.schro-80  { width: 80px; height: 100px; }
+.schro-120 { width: 120px; height: 150px; }
+.schro-200 { width: 200px; height: 250px; }
+.schro-400 { width: 400px; height: 500px; }
+
+/* ---- HALO (atom ring above head) ---- */
+.schro-halo {
+  position: absolute;
+  top: -16%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.halo-ring {
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.halo-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  box-shadow: 0 0 4px var(--accent);
+  transform-origin: 0 0;
+}
+
+.halo-dot-1 { animation: haloOrbit 3s linear infinite; }
+.halo-dot-2 { animation: haloOrbit 3s linear infinite reverse; animation-delay: -1.5s; }
+
+/* ---- CAT BODY STRUCTURE ---- */
+.schro-body-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.schro-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ---- EXPRESSION STATES (via class on .schro) ---- */
+.schro-idle { animation: floatBob 4s ease-in-out infinite; }
+.schro-idle .halo-dot-1 { animation-duration: 5s; opacity: 0.6; }
+.schro-idle .halo-dot-2 { animation-duration: 5s; opacity: 0.6; }
+.schro-idle .halo-ring { opacity: 0.7; }
+
+.schro-thinking { animation: floatBob 5s ease-in-out infinite; }
+.schro-thinking .halo-ring { animation: pulseGlow 2s ease-in-out infinite; }
+
+.schro-happy { animation: floatBob 2.5s ease-in-out infinite; }
+.schro-happy .halo-ring { box-shadow: 0 0 16px var(--accent); }
+
+.schro-encouraging { animation: floatBob 3s ease-in-out infinite; }
+.schro-encouraging .halo-ring { box-shadow: 0 0 12px var(--accent); }
+
+.schro-excited { animation: floatBob 1.5s ease-in-out infinite; }
+.schro-excited .halo-ring { animation: pulseGlow 0.8s ease-in-out infinite; }
+.schro-excited .halo-dot-1 { animation-duration: 1.2s; }
+.schro-excited .halo-dot-2 { animation-duration: 1.2s; }
+
+/* ---- AVATAR VERSIONS (for header use) ---- */
+.schro-avatar-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #6D28D9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: var(--shadow-glow);
+  position: relative;
+  overflow: visible;
+}
+
+.schro-avatar-sm::after {
+  content: '🐾';
+  font-size: 20px;
+}
+
+/* ---- FLOATING SCHRO ICON ---- */
+.schro-icon-sm {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.schro-icon-sm::before {
+  content: '🐱';
+}
+
+/* ---- IDLE SIZE ---- */
+.schro-idle-sm {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #6D28D9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  animation: floatBob 3s ease-in-out infinite;
+  box-shadow: var(--shadow-glow);
+}
+
+.schro-idle-sm::after { content: '🐱'; }
+
+/* ---- EXPRESSIONS MAP & V2 CHALK-SKETCH STYLES ---- */
+.schro-container {
+  position: relative;
+  display: inline-block;
+}
+
+.schro-chalk-sketch {
+  filter: drop-shadow(0 6px 16px rgba(109, 74, 255, 0.28)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.schro-chalk-sketch:hover {
+  transform: scale(1.04) rotate(-1deg);
+  filter: drop-shadow(0 0 24px rgba(124, 92, 255, 0.5)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+}
+
+.schro-halo-svg {
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5));
+}
+
+.schro-container .sparkles {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  font-size: 16px;
+  animation: starPop 0.5s ease, floatBob 2s ease-in-out 0.5s infinite;
+}

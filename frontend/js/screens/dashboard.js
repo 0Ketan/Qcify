@@ -1,0 +1,198 @@
+/**
+ * QUANTUMPAWS — Newbie Dashboard
+ */
+
+const BADGES_DATA = [
+  { icon: '⚛️', label: 'First Qubit', earned: true },
+  { icon: '🌊', label: 'Wave Rider', earned: true },
+  { icon: '🎯', label: 'Superposer', earned: true },
+  { icon: '🔮', label: 'Gate Maker', earned: false },
+  { icon: '🌀', label: 'Entangler', earned: false },
+  { icon: '🏆', label: 'Quiz Ace', earned: false },
+  { icon: '🚀', label: 'Rocket', earned: false },
+  { icon: '💎', label: 'Genius', earned: false },
+];
+
+const NEWS_DATA = [
+  { icon: '⚛️', headline: 'Qubits break coherence record — 1ms at room temp!', time: '2h ago', color: '#7C5CFF' },
+  { icon: '🔗', headline: 'New error correction algorithm reduces noise by 60%', time: '5h ago', color: '#22D3EE' },
+  { icon: '🌌', headline: 'Entanglement demonstrated across 600km fiber link', time: '1d ago', color: '#34D399' },
+];
+
+const ROADMAP_NODES = [
+  { id: 1, title: 'Superposition', subtitle: 'The quantum coin flip', status: 'unlocked', icon: '⚛️' },
+  { id: 2, title: 'Qubits & States', subtitle: 'Meet the quantum bit', status: 'locked', icon: '💡' },
+  { id: 3, title: 'Quantum Gates', subtitle: 'Logic for the quantum world', status: 'locked', icon: '🔧' },
+  { id: 4, title: 'Entanglement', subtitle: 'Spooky action at a distance', status: 'locked', icon: '🔗' },
+  { id: 5, title: 'Quantum Circuits', subtitle: 'Building quantum programs', status: 'locked', icon: '⚡' },
+  { id: 6, title: 'Grover\'s Algorithm', subtitle: 'Quantum search power', status: 'locked', icon: '🔍' },
+];
+
+function renderDashboard(app, params = {}) {
+  const name = window.QP?.playerName || sessionStorage.getItem('qp_name') || 'Explorer';
+  const isUpdated = params.progress40;
+  const progressPct = isUpdated ? 40 : 15;
+
+  app.innerHTML = `
+    ${buildStarsBg()}
+    ${buildSidebar('home')}
+    ${buildNavbar('home')}
+    ${buildBottomNav('home')}
+
+    <div class="dashboard-layout">
+      <!-- Main (Spans 8 columns) -->
+      <main class="dashboard-main">
+
+        <!-- Greeting -->
+        <div class="greeting-row section-animate">
+          <div id="dash-schro-sm" style="display:flex;align-items:center;justify-content:center"></div>
+          <div class="greeting-text" style="flex:1">
+            <div class="card-sketch-tag">LAB NOTE: LOGGED IN AS ${name.toUpperCase()}</div>
+            <h2>Hey ${name}! Ready to purr? 🐾</h2>
+            <p class="text-muted">You're on fire — keep that quantum curiosity flowing!</p>
+          </div>
+          <div class="streak-counter" title="Active Quantum Streak">🔥 5 days</div>
+        </div>
+
+        <!-- Journey Progress (Span 8 columns with intentional right bleed) -->
+        <div class="card card-sketch journey-span-8 section section-animate">
+          <div class="card-sketch-tag">EXP. RUNTIME: 84% COHERENCE</div>
+          <div class="section-title" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+            <span>🗺️ Journey to Intermediate</span>
+            <span style="font-family:var(--font-code);font-size:11px;color:var(--accent-lime);background:rgba(163,255,18,0.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(163,255,18,0.3)">LEVEL 01: QUBIT ROOKIE</span>
+          </div>
+          ${createProgressBar(progressPct, 100, 'Overall Progress', true)}
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+            <div class="badge badge-success">✓ Picked track</div>
+            <div class="badge badge-success">✓ Met Schrö</div>
+            <div class="badge ${progressPct >= 25 ? 'badge-success' : 'badge-locked'}">
+              ${progressPct >= 25 ? '✓' : '○'} First lesson
+            </div>
+            <div class="badge badge-locked" style="opacity:0.5">○ First quiz</div>
+          </div>
+        </div>
+
+        <!-- Roadmap -->
+        <div class="section section-animate">
+          <div class="section-title" style="display:flex;align-items:center;justify-content:space-between">
+            <span>🛣️ Your Quantum Roadmap</span>
+            <span class="text-caption text-muted" style="font-family:var(--font-code)">TAPED LAB SEQUENCE</span>
+          </div>
+          <div class="roadmap" id="roadmap">
+            ${ROADMAP_NODES.map(node => `
+              <div class="roadmap-node" onclick="handleNodeClick(${node.id})" 
+                   title="${node.status === 'locked' ? 'Finish previous lesson to unlock' : ''}">
+                <div class="node-circle ${node.status}">
+                  ${node.status === 'locked' ? '🔒' : node.icon}
+                </div>
+                <div class="node-info">
+                  <div class="node-title ${node.status === 'locked' ? 'text-muted' : ''}">
+                    ${node.title}
+                    ${node.status === 'unlocked' ? `<span style="font-size:10px;color:var(--accent-lime);margin-left:8px;font-family:var(--font-code);font-weight:700">ACTIVE EXPERIMENT</span>` : ''}
+                  </div>
+                  <div class="node-subtitle">${node.subtitle}</div>
+                  ${node.status === 'unlocked' ? `
+                    <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="event.stopPropagation();navigate('/lesson')">
+                      Start Lesson →
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Locked Features -->
+        <div class="section section-animate">
+          <div class="section-title">🔒 Coming as You Progress</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="card card-sketch locked clickable" onclick="shakeLockedCard(this)">
+              <div class="lock-icon">🔒</div>
+              <div style="font-size:28px;margin-bottom:12px;filter:grayscale(1)">⚗️</div>
+              <h4 style="color:var(--text-muted)">Circuit Builder</h4>
+              <p class="text-sm text-muted">Drag & drop quantum circuits</p>
+              <div class="badge badge-locked" style="margin-top:12px">Unlocks at 40%</div>
+            </div>
+            <div class="card card-sketch locked clickable tilt-right" onclick="shakeLockedCard(this)">
+              <div class="lock-icon">🔒</div>
+              <div style="font-size:28px;margin-bottom:12px;filter:grayscale(1)">📐</div>
+              <h4 style="color:var(--text-muted)">Advanced Math</h4>
+              <p class="text-sm text-muted">Linear algebra & matrix ops</p>
+              <div class="badge badge-locked" style="margin-top:12px">Unlocks at 40%</div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- Right Column (Overlaps 16px) -->
+      <aside class="dashboard-right">
+        <!-- Ask Schrö Card (Taped Lab Note) -->
+        <div class="card card-sketch tape-cyan" style="margin-bottom:24px;text-align:center;cursor:pointer"
+             onclick="toggleChatDrawer()">
+          <div class="card-sketch-tag">ON-CALL AI MENTOR</div>
+          <div style="font-size:36px;margin:4px 0 8px">🐾</div>
+          <h4>Ask Schrö</h4>
+          <p class="text-sm text-muted" style="margin:4px 0 12px">Got a quantum question? Purr right in!</p>
+          <button class="btn btn-primary btn-sm w-full">Open Chat ⚛️</button>
+        </div>
+
+        <!-- Badges -->
+        <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>🏆 Badges</span>
+          <span style="font-size:11px;font-family:var(--font-code);color:var(--accent-lime)">3/8 UNLOCKED</span>
+        </div>
+        <div class="badges-grid" style="margin-bottom:24px">
+          ${BADGES_DATA.map(b => buildBadgeSlot(b)).join('')}
+        </div>
+
+        <!-- News (Taped Lab Dispatches) -->
+        <div class="section-title">📰 Quantum News</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          ${NEWS_DATA.map(n => `
+            <div class="news-card hover-scale">
+              <div class="news-thumb" style="background:rgba(124,92,255,0.12)">${n.icon}</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:500;line-height:1.4">${n.headline}</div>
+                <div class="text-caption text-muted" style="margin-top:4px;font-family:var(--font-code)">${n.time} • DISPATCH #042</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </aside>
+    </div>
+  `;
+
+  // Insert small Schrö avatar
+  const schroEl = document.getElementById('dash-schro-sm');
+  schroEl.appendChild(renderSchro('happy', 48));
+
+  // Animate progress bar
+  if (isUpdated) {
+    setTimeout(() => {
+      animateProgressBar('prog-fill', 15, 40);
+      showToast('New badge: Superposition Starter! 🏆', 'reward');
+    }, 600);
+  } else {
+    setTimeout(() => animateProgressBar('prog-fill', 0, progressPct), 300);
+  }
+}
+
+function handleNodeClick(nodeId) {
+  if (nodeId === 1) {
+    navigate('/lesson');
+  } else {
+    // Locked node - shake
+    const nodes = document.querySelectorAll('.roadmap-node');
+    const node = nodes[nodeId - 1];
+    if (node) {
+      shakeElement(node);
+      showToast('Finish Superposition first to unlock this! 🔒', 'default', 2500);
+    }
+  }
+}
+
+function shakeLockedCard(el) {
+  shakeElement(el);
+  showToast('Complete more lessons to unlock this feature! 💜', 'default', 2500);
+}
