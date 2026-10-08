@@ -1,19 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>QuantumPaws — Learn Quantum Computing with Schrö (V2 Human Lab)</title>
-    <meta name="description" content="QuantumPaws is a gamified quantum computing platform featuring Schrö, your AI feline mentor in superposition. Built with React, Vite, and Qiskit." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <!-- V2 Human Lab Grain Overlay -->
-    <div class="grain-overlay" aria-hidden="true"></div>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qcify — Learn Quantum Computing with Schrö</title>
+  <meta name="description" content="Qcify is a gamified quantum computing learning platform featuring Schrö, your AI cat companion. Learn qubits, gates, and circuits through stories, quizzes, and interactive sandboxes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/tokens.css" />
+  <link rel="stylesheet" href="/styles/components.css" />
+  <link rel="stylesheet" href="/styles/layouts.css" />
+  <link rel="stylesheet" href="/styles/animations.css" />
+  <link rel="stylesheet" href="/styles/mascot.css" />
+  <link rel="stylesheet" href="/styles/badges.css" />
+</head>
+<body>
+  <!-- V2 Human Lab Grain Overlay -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <div id="app">
+    <!-- Screens injected by router -->
+  </div>
+
+  <!-- Floating Schrö Button (global) -->
+  <div id="floating-schro-btn" class="floating-schro-btn hidden" onclick="toggleChatDrawer()">
+    <div class="schro-icon-sm"></div>
+    <div class="notif-dot"></div>
+    <div class="proactive-nudge" id="proactive-nudge">
+      <span>You haven't tried the H gate yet! 🔮</span>
+      <button class="nudge-close" onclick="event.stopPropagation(); closeNudge()">×</button>
+    </div>
+  </div>
+
+  <!-- Chat Drawer -->
+  <div id="chat-drawer" class="chat-drawer">
+    <div class="chat-drawer-header">
+      <div class="chat-header-left">
+        <div class="schro-avatar-sm"></div>
+        <div>
+          <div class="chat-name">Schrö</div>
+          <div class="chat-mood">Curious & Encouraging 🐾</div>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="icon-btn" onclick="minimizeChatDrawer()">—</button>
+        <button class="icon-btn" onclick="toggleChatDrawer()">×</button>
+      </div>
+    </div>
+    <div class="chat-body" id="chat-body">
+      <div class="chat-empty-state" id="chat-empty">
+        <div class="schro-idle-sm"></div>
+        <p class="text-muted">Ask me anything! 🐱⚛️</p>
+      </div>
+      <div id="chat-messages"></div>
+    </div>
+    <div class="hint-ladder" id="hint-ladder">
+      <button class="btn btn-ghost btn-sm" onclick="toggleHints()">💡 Give me a hint</button>
+      <div class="hints-list hidden" id="hints-list">
+        <div class="hint-item" onclick="revealHint(1)">Hint 1: Think about probability waves...</div>
+        <div class="hint-item hint-locked" id="hint-2">Hint 2: (unlock after Hint 1)</div>
+        <div class="hint-item hint-locked" id="hint-answer">Show Answer (unlock after Hints)</div>
+      </div>
+    </div>
+    <div class="chat-footer">
+      <input type="text" class="chat-input" id="chat-input" placeholder="Ask Schrö anything..." onkeydown="handleChatKey(event)" />
+      <button class="chat-send-btn" onclick="sendChatMessage()">➤</button>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="/js/router.js"></script>
+  <script src="/js/schro.js"></script>
+  <script src="/js/badgeRenderer.js"></script>
+  <script src="/js/badges.js"></script>
+  <script src="/js/badgeQuizzes.js"></script>
+  <script src="/js/badgeModal.js"></script>
+  <script src="/js/components.js"></script>
+  <script src="/js/chat.js"></script>
+  <script src="/js/screens/login.js"></script>
+  <script src="/js/screens/onboarding.js"></script>
+  <script src="/js/screens/dashboard.js"></script>
+  <script src="/js/screens/lesson.js"></script>
+  <script src="/js/screens/quiz.js"></script>
+  <script src="/js/screens/sandbox.js"></script>
+  <script src="/js/screens/profile.js"></script>
+  <script src="/js/screens/coming-soon.js"></script>
+  <script src="/js/app.js"></script>
+</body>
 </html>

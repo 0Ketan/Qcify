@@ -1,0 +1,191 @@
+/* ============================================
+   QUANTUMPAWS — DESIGN TOKENS (CSS Variables)
+   ============================================ */
+
+:root {
+  /* ============================================
+     QUANTUMPAWS V2 — HUMAN LAB EDITION TOKENS
+     ============================================ */
+  --background: #090D19;
+  --surface: #141B2D;
+  --surface-raised: #1E2943;
+  --primary: #7C5CFF;
+  --primary-dirty: #6D4AFF; /* Less saturated, more human */
+  --accent: #22D3EE;
+  --accent-lime: #A3FF12;   /* Crazy pop color - XP, streaks, 1% only */
+  --reward: #FBBF24;
+  --text: #F1F5F9;
+  --text-chalk: #E2E8F0;   /* Slightly off-white, not pure chalk */
+  --locked: #3B4252;
+  --stroke-chalk: rgba(241, 245, 249, 0.2); /* For hand-drawn chalk borders - 20% opacity */
+  --stroke-chalk-bright: rgba(241, 245, 249, 0.35);
+  --error: #EF4444;
+  --success: #34D399;
+
+  /* Typography */
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+
+  /* Font Sizes */
+  --h1: 40px;
+  --h2: 32px;
+  --h3: 24px;
+  --h4: 18px;
+  --body: 16px;
+  --body-sm: 14px;
+  --label: 14px;
+  --caption: 12px;
+
+  /* Border Radius */
+  --radius-md: 16px;
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-imperfect: 18px 14px 16px 15px; /* Organic hand-crafted feel */
+  --radius-full: 999px;
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-12: 48px;
+
+  /* Shadows - Dirty Violet & Grainy Neon */
+  --shadow-grainy: 0 0 20px 0 rgba(124, 92, 255, 0.3);
+  --shadow-glow: 0 0 24px rgba(109, 74, 255, 0.35), 0 8px 32px rgba(0,0,0,0.45);
+  --shadow-glow-accent: 0 0 24px rgba(34, 211, 238, 0.35), 0 8px 32px rgba(0,0,0,0.45);
+  --shadow-glow-lime: 0 0 20px rgba(163, 255, 18, 0.35), 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-glow-reward: 0 0 16px rgba(251, 191, 36, 0.4), 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-soft: 0 4px 16px rgba(0,0,0,0.35);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.28);
+
+  /* Transitions */
+  --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- Base Reset ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  background-color: var(--background);
+  color: var(--text);
+  font-size: var(--body);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+#app {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ---- Grain & Chalk Texture Overlay (V2 HUMAN LAB SECRET) ---- */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.8 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* ---- Star & Blackboard Lab Background ---- */
+.bg-stars {
+  position: fixed;
+  inset: 0;
+  background: var(--background);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Subtle chalk grid & chalk dust texture */
+.bg-stars::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    /* Fine chalkboard technical grid */
+    linear-gradient(rgba(241, 245, 249, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(241, 245, 249, 0.018) 1px, transparent 1px),
+    /* Hand-scattered stars & chalk dust */
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(226, 232, 240, 0.15) 0%, transparent 60%),
+    radial-gradient(1px 1px at 28% 42%, rgba(226, 232, 240, 0.1) 0%, transparent 60%),
+    radial-gradient(2px 2px at 58% 22%, rgba(124, 92, 255, 0.25) 0%, transparent 70%),
+    radial-gradient(1px 1px at 78% 65%, rgba(34, 211, 238, 0.15) 0%, transparent 60%),
+    radial-gradient(2px 2px at 92% 32%, rgba(226, 232, 240, 0.2) 0%, transparent 70%),
+    radial-gradient(1.5px 1.5px at 18% 78%, rgba(241, 245, 249, 0.12) 0%, transparent 60%),
+    radial-gradient(1px 1px at 64% 88%, rgba(226, 232, 240, 0.1) 0%, transparent 60%),
+    radial-gradient(2.5px 2.5px at 46% 68%, rgba(163, 255, 18, 0.12) 0%, transparent 80%),
+    radial-gradient(1px 1px at 86% 88%, rgba(241, 245, 249, 0.14) 0%, transparent 60%),
+    radial-gradient(1.5px 1.5px at 6% 52%, rgba(226, 232, 240, 0.1) 0%, transparent 60%),
+    radial-gradient(1px 1px at 42% 12%, rgba(241, 245, 249, 0.15) 0%, transparent 60%),
+    radial-gradient(2px 2px at 96% 54%, rgba(226, 232, 240, 0.18) 0%, transparent 70%);
+  background-size: 48px 48px, 48px 48px, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto;
+}
+
+/* Dirty Violet & Cyan Nebula with organic hand-painted spread */
+.bg-stars::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% -10%, rgba(109, 74, 255, 0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 30% at 90% 85%, rgba(34, 211, 238, 0.08) 0%, transparent 60%),
+    radial-gradient(circle 350px at 10% 40%, rgba(124, 92, 255, 0.08) 0%, transparent 70%);
+}
+
+/* ---- Typography Utilities ---- */
+h1 { font-family: var(--font-heading); font-size: var(--h1); font-weight: 700; }
+h2 { font-family: var(--font-heading); font-size: var(--h2); font-weight: 700; }
+h3 { font-family: var(--font-heading); font-size: var(--h3); font-weight: 600; }
+h4 { font-family: var(--font-heading); font-size: var(--h4); font-weight: 500; }
+
+.text-muted { color: var(--text-muted); }
+.text-primary { color: var(--primary); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-reward { color: var(--reward); }
+.text-sm { font-size: var(--body-sm); }
+.text-caption { font-size: var(--caption); }
+.text-center { text-align: center; }
+.font-code { font-family: var(--font-code); }
+.font-heading { font-family: var(--font-heading); }
+
+/* ---- Utility Classes ---- */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: var(--sp-1); }
+.gap-2 { gap: var(--sp-2); }
+.gap-3 { gap: var(--sp-3); }
+.gap-4 { gap: var(--sp-4); }
+.gap-6 { gap: var(--sp-6); }
+.gap-8 { gap: var(--sp-8); }
+.w-full { width: 100%; }
+.relative { position: relative; }
+.absolute { position: absolute; }
+.screen { min-height: 100vh; position: relative; z-index: 1; }
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--locked); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }

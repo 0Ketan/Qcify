@@ -14,9 +14,13 @@ import { SandboxPage } from './pages/Sandbox';
 
 export function App() {
   const currentRoute = useUserStore(s => s.currentRoute);
+  const isOnboarded = useUserStore(s => s.isOnboarded);
+
+  // If user hasn't completed onboarding, always show onboarding flow
+  const activeRoute = !isOnboarded ? 'onboarding' : currentRoute;
 
   const renderActivePage = () => {
-    switch (currentRoute) {
+    switch (activeRoute) {
       case 'onboarding':
         return <OnboardingPage />;
       case 'lesson':
@@ -29,7 +33,7 @@ export function App() {
     }
   };
 
-  const isWideLayout = currentRoute === 'sandbox';
+  const isWideLayout = activeRoute === 'sandbox' || activeRoute === 'onboarding';
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative' }}>
@@ -39,7 +43,7 @@ export function App() {
       {/* Global Top Navbar */}
       <Navbar />
 
-      {/* Global Lab Sidebar (Desktop) */}
+      {/* Global Lab Sidebar (Desktop) - Hidden during Onboarding & Sandbox */}
       {!isWideLayout && <Sidebar />}
 
       {/* Main Page Canvas with Layout Padding */}
