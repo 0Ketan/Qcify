@@ -3,6 +3,7 @@ import { useUserStore, userStore } from '../../state/userStore';
 
 export function Navbar() {
   const currentRoute = useUserStore(s => s.currentRoute);
+  const isOnboarded = useUserStore(s => s.isOnboarded);
   const streakDays = useUserStore(s => s.streakDays);
   const xp = useUserStore(s => s.xp);
   const hasUnreadNudge = useUserStore(s => s.hasUnreadNudge);
@@ -12,7 +13,7 @@ export function Navbar() {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'lesson', label: 'Lessons' },
     { id: 'sandbox', label: 'Sandbox' },
-    { id: 'onboarding', label: 'Onboarding' }
+    { id: 'onboarding', label: 'Setup / Tracks' }
   ];
 
   return (
@@ -33,12 +34,14 @@ export function Navbar() {
     }}>
       {/* Brand Logo */}
       <div 
-        onClick={() => userStore.navigate('dashboard')}
+        onClick={() => {
+          if (isOnboarded) userStore.navigate('dashboard');
+        }}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '10px',
-          cursor: 'pointer',
+          cursor: isOnboarded ? 'pointer' : 'default',
           fontFamily: 'var(--font-heading)',
           fontSize: '22px',
           fontWeight: 700
@@ -61,27 +64,49 @@ export function Navbar() {
         </span>
       </div>
 
-      {/* Nav Links */}
-      <nav style={{ display: 'flex', gap: '8px' }}>
-        {navLinks.map(link => {
-          const isActive = currentRoute === link.id;
-          return (
-            <button
-              key={link.id}
-              onClick={() => userStore.navigate(link.id)}
-              className="btn btn-ghost btn-sm"
-              style={{
-                color: isActive ? 'var(--text)' : 'var(--text-chalk)',
-                borderBottom: isActive ? '2px solid var(--primary)' : '2px solid transparent',
-                borderRadius: '4px',
-                fontWeight: isActive ? 600 : 400
-              }}
-            >
-              {link.label}
-            </button>
-          );
-        })}
-      </nav>
+      {/* Nav Links / Induction Indicator */}
+      {!isOnboarded ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{
+            fontFamily: 'var(--font-code)',
+            fontSize: '12px',
+            color: 'var(--accent-lime)',
+            background: 'rgba(163, 255, 18, 0.08)',
+            border: '1px dashed var(--accent-lime)',
+            padding: '4px 12px',
+            borderRadius: 'var(--radius-full)'
+          }}>
+            🔬 Laboratory Induction • Profile Setup
+          </span>
+        </div>
+      ) : (
+        <nav style={{ display: 'flex', gap: '8px' }}>
+          {navLinks.map(link => {
+            const isActive = currentRoute === link.id;
+            return (
+              <button
+                key={link.id}
+                onClick={() => {
+                  if (link.id === 'onboarding') {
+                    userStore.resetOnboarding();
+                  } else {
+                    userStore.navigate(link.id);
+                  }
+                }}
+                className="btn btn-ghost btn-sm"
+                style={{
+                  color: isActive ? 'var(--text)' : 'var(--text-chalk)',
+                  borderBottom: isActive ? '2px solid var(--primary)' : '2px solid transparent',
+                  borderRadius: '4px',
+                  fontWeight: isActive ? 600 : 400
+                }}
+              >
+                {link.label}
+              </button>
+            );
+          })}
+        </nav>
+      )}
 
       {/* Right Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

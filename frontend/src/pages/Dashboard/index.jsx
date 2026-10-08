@@ -20,6 +20,7 @@ const DISPATCH_NEWS = [
 
 export function DashboardPage() {
   const playerName = useUserStore(s => s.playerName);
+  const track = useUserStore(s => s.track);
   const overallProgress = useUserStore(s => s.overallProgress);
   const streakDays = useUserStore(s => s.streakDays);
 
@@ -59,13 +60,23 @@ export function DashboardPage() {
         }} className="card-sketch">
           <SchroMascot expression="happy" size={72} />
           <div style={{ flex: 1 }}>
-            <div className="card-sketch-tag">LAB SCIENTIST LOGGED IN: {playerName.toUpperCase()}</div>
-            <h2>Hey {playerName}! Ready to experiment? 🐾</h2>
+            <div className="card-sketch-tag">LAB SCIENTIST LOGGED IN: {playerName ? playerName.toUpperCase() : 'CADET'}</div>
+            <h2>Hey {playerName || 'Cadet'}! Ready to experiment? 🐾</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
-              Your quantum curiosity is burning bright — let's advance toward Intermediate Level!
+              Your quantum curiosity is burning bright — currently on the <strong style={{ color: 'var(--accent-lime)' }}>{track ? track.toUpperCase() : 'NEWBIE'}</strong> track!
             </p>
           </div>
-          <div className="streak-counter">🔥 {streakDays} days</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+            <div className="streak-counter">🔥 {streakDays} days</div>
+            <button
+              onClick={() => userStore.resetOnboarding()}
+              className="btn btn-ghost btn-sm"
+              style={{ fontSize: '11px', padding: '4px 8px', border: '1px dashed var(--stroke-chalk)' }}
+              title="Change your scientist callsign or experience level"
+            >
+              🔄 Change Level / Name
+            </button>
+          </div>
         </div>
 
         {/* Journey Progress (Spanning full 8 columns with subtle bleed) */}

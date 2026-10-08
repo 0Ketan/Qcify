@@ -20,19 +20,32 @@ const initialBadges = [
 function loadPersistedState() {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // If user has not completed onboarding or has default name, require onboarding
+      if (!parsed.isOnboarded || !parsed.playerName || parsed.playerName === 'Alex') {
+        return {
+          ...parsed,
+          playerName: parsed.playerName === 'Alex' ? '' : (parsed.playerName || ''),
+          isOnboarded: false,
+          currentRoute: 'onboarding'
+        };
+      }
+      return parsed;
+    }
   } catch (e) {}
   return null;
 }
 
 const defaultState = {
-  playerName: 'Alex',
+  playerName: '',
   track: 'newbie', // 'newbie' | 'intermediate' | 'advanced'
   level: 1,
-  xp: 140,
-  streakDays: 5,
-  overallProgress: 25,
-  currentRoute: 'dashboard', // 'onboarding' | 'dashboard' | 'lesson' | 'sandbox'
+  xp: 0,
+  streakDays: 1,
+  overallProgress: 0,
+  isOnboarded: false,
+  currentRoute: 'onboarding', // 'onboarding' | 'dashboard' | 'lesson' | 'sandbox'
   
   // Badges
   badges: initialBadges,
@@ -108,6 +121,40 @@ export const userStore = {
 
   setTrack: (track) => {
     userStore.setState({ track });
+  },
+
+  completeOnboarding: ({ name, track }) => {
+    const finalName = (name && name.trim()) || 'Quantum Cadet';
+    const finalTrack = track || 'newbie';
+    
+    // Determine starting XP based on track
+    const startingXP = finalTrack === 'advanced' ? 150 : (finalTrack === 'intermediate' ? 100 : 50);
+
+    userStore.setState(s => ({
+      playerName: finalName,
+      track: finalTrack,
+      isOnboarded: true,
+      currentRoute: 'dashboard',
+      xp: Math.max(s.xp, startingXP),
+      level: Math.floor(startingXP / 100) + 1,
+      overallProgress: 15
+    }));
+
+    userStore.unlockBadge('first_qubit');
+    if (finalTrack === 'intermediate') userStore.unlockBadge('gate_maker');
+    if (finalTrack === 'advanced') userStore.unlockBadge('matrix_cat');
+
+    userStore.showToast(`Welcome aboard, Scientist ${finalName}! 🚀`, 'reward');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  resetOnboarding: () => {
+    userStore.setState({
+      isOnboarded: false,
+      currentRoute: 'onboarding'
+    });
+    userStore.showToast('Laboratory Induction re-opened 🐾', 'lime');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   },
 
   navigate: (route) => {
