@@ -11,7 +11,7 @@ frontend/.env.*.local
 backend/__pycache__/
 backend/*/__pycache__/
 backend/*/*/__pycache__/
-backend/*/*/*/__pycache__/
+backend/*/*/*/__pycache__
 backend/.env
 backend/venv/
 backend/.venv/
@@ -33,3 +33,5 @@ yarn-error.log*
 # Local Archives
 legacy_prototype/
 
+# Environment variables (not tracked)
+.env

@@ -11,10 +11,14 @@ class Settings(BaseSettings):
     ]
     max_qubits: int = 10
     max_shots: int = 8192
+    nvidia_api_key: str
+    nvidia_base_url: str
+    nvidia_model: str
 
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 settings = Settings()

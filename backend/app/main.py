@@ -15,5 +15,4 @@ app.add_middleware(
 )
 
 app.include_router(circuit.router)
-# TODO: Uncomment when mascot routes are implemented
-# app.include_router(mascot.router)
+app.include_router(mascot.router)
