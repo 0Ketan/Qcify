@@ -32,7 +32,7 @@ export const api = {
       const res = await fetch(`${API_BASE_URL}/circuit/backends`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
-    } catch (err) {
+    } catch {
       return {
         backends: [
           { id: 'qiskit_aer', name: 'Qiskit Aer Simulator (Local)', qubits: 32, status: 'online' },
@@ -69,7 +69,7 @@ export const api = {
       const res = await fetch(`${API_BASE_URL}/mascot/hints/${encodeURIComponent(topic)}?step=${step}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
-    } catch (err) {
+    } catch {
       return clientHint(topic, step);
     }
   }
@@ -129,7 +129,7 @@ function clientSimulateCircuit(req) {
   };
 }
 
-function clientSchroChat(message, context) {
+function clientSchroChat(message, _context) {
   const m = message.toLowerCase();
   let reply = "Fascinating quantum observation! In the quantum realm, until you measure a qubit, it lives in a cozy probability cloud! 🐾";
   let expression = "happy";

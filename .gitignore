@@ -33,3 +33,10 @@ yarn-error.log*
 # Local Archives
 legacy_prototype/
 
+
+# AI Codebase Graph Caches
+graphify-out/cache/
+graft/
+.repowise/
+.understand-anything/
+strix_runs/

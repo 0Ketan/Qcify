@@ -36,7 +36,7 @@ export function ChatDrawer() {
       if (res.expression) {
         userStore.setSchroExpression(res.expression);
       }
-    } catch (err) {
+    } catch {
       userStore.addChatMessage({
         role: 'assistant',
         content: "Meow! My probability wave encountered cosmic interference, but I'm still purring! Try asking about Hadamard gates or Superposition! 🐾"

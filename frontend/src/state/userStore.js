@@ -21,7 +21,7 @@ function loadPersistedState() {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
-  } catch (e) {}
+  } catch {}
   return null;
 }
 
@@ -84,7 +84,7 @@ const listeners = new Set();
 function notify() {
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {}
+  } catch {}
   listeners.forEach(fn => fn(state));
 }
 

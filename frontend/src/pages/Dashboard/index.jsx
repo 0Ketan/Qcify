@@ -4,12 +4,12 @@ import { SchroMascot } from '../../components/Shared/SchroMascot';
 import { BadgeGrid } from '../../components/Gamification/BadgeGrid';
 
 const ROADMAP_NODES = [
-  { id: 1, title: 'Superposition & Coin Flips', subtitle: 'Linear combinations and wave functions', status: 'unlocked', icon: '⚛️', route: 'lesson' },
-  { id: 2, title: 'Qubits & Bloch Sphere', subtitle: 'Geometrical representation of states', status: 'unlocked', icon: '🌐', route: 'sandbox' },
-  { id: 3, title: 'Hadamard & Pauli Gates', subtitle: 'The core unitary transformations', status: 'unlocked', icon: '🔧', route: 'sandbox' },
-  { id: 4, title: 'Quantum Entanglement', subtitle: 'Spooky action and Bell States |Φ⁺⟩', status: 'locked', icon: '🔗' },
-  { id: 5, title: 'Quantum Circuit Synthesis', subtitle: 'Constructing multi-qubit algorithms', status: 'locked', icon: '⚡' },
-  { id: 6, title: "Grover's Quantum Search", subtitle: 'Quadratic speedup in database search', status: 'locked', icon: '🔍' }
+  { id: 0, title: 'Lesson 0: What, Why, and How is Quantum', subtitle: 'Switches, spinning coins, and why nature needs a new kind of computer', status: 'unlocked', icon: '⚛️', route: 'lesson' },
+  { id: 1, title: 'Qubits & Bloch Sphere', subtitle: 'Geometrical representation of states', status: 'unlocked', icon: '🌐', route: 'sandbox' },
+  { id: 2, title: 'Hadamard & Pauli Gates', subtitle: 'The core unitary transformations', status: 'unlocked', icon: '🔧', route: 'sandbox' },
+  { id: 3, title: 'Quantum Entanglement', subtitle: 'Spooky action and Bell States |Φ⁺⟩', status: 'locked', icon: '🔗' },
+  { id: 4, title: 'Quantum Circuit Synthesis', subtitle: 'Constructing multi-qubit algorithms', status: 'locked', icon: '⚡' },
+  { id: 5, title: "Grover's Quantum Search", subtitle: 'Quadratic speedup in database search', status: 'locked', icon: '🔍' }
 ];
 
 const DISPATCH_NEWS = [

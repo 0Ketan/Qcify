@@ -1,6 +1,6 @@
 import React from 'react';
 import { userStore } from '../../state/userStore';
-import { AVAILABLE_GATES } from './GatePalette';
+import { AVAILABLE_GATES } from './gates';
 
 const TOTAL_STEPS = 5;
 
