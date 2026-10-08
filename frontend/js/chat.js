@@ -1,5 +1,5 @@
 /**
- * QUANTUMPAWS — Chat / Schrö AI Assistant
+ * Qcify — Chat / Schrö AI Assistant
  */
 
 const SchroResponses = {

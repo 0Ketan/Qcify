@@ -6,7 +6,7 @@ except ImportError:
     from pydantic import BaseModel as BaseSettings
 
 class Settings(BaseSettings):
-    app_name: str = "QuantumPaws API"
+    app_name: str = "Qcify API"
     app_env: str = "development"
     debug: bool = True
     port: int = 8000

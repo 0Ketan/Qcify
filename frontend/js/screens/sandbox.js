@@ -1,5 +1,5 @@
 /**
- * QUANTUMPAWS — Quantum Sandbox Page
+ * Qcify — Quantum Sandbox Page
  */
 
 let sandboxPanelTab = 'results';
@@ -13,7 +13,7 @@ function renderSandbox(app) {
       <div class="sandbox-topbar">
         <div class="navbar-logo" onclick="navigate('/dashboard')" style="cursor:pointer">
           <span>🐾</span>
-          <span>Quantum<span style="color:var(--primary)">Paws</span></span>
+          <span>Qc<span style="color:var(--primary)">ify</span></span>
         </div>
 
         <!-- Backend Dropdown -->
@@ -103,8 +103,26 @@ function addGate(name) {
       cursor:pointer;animation:scaleIn 0.2s ease;
     `;
     gate.textContent = name;
-    gate.onclick = () => { gate.remove(); circuitGates.pop(); };
+    gate.onclick = () => { 
+      gate.remove(); 
+      const idx = circuitGates.lastIndexOf(name);
+      if (idx !== -1) circuitGates.splice(idx, 1);
+      if (sandboxPanelTab === 'code') {
+        const p = document.getElementById('panel-content');
+        if (p) p.innerHTML = renderPanelCode();
+      } else if (sandboxPanelTab === 'bloch') {
+        const p = document.getElementById('panel-content');
+        if (p) p.innerHTML = renderPanelBloch();
+      }
+    };
     track.appendChild(gate);
+  }
+  if (sandboxPanelTab === 'code') {
+    const p = document.getElementById('panel-content');
+    if (p) p.innerHTML = renderPanelCode();
+  } else if (sandboxPanelTab === 'bloch') {
+    const p = document.getElementById('panel-content');
+    if (p) p.innerHTML = renderPanelBloch();
   }
   showToast(`${name} gate added to q[0]`, 'default', 1500);
 }
@@ -137,11 +155,80 @@ function renderPanelEmpty(panel) {
   `;
 }
 
+function generateSandboxQiskitCode(gates) {
+  let lines = [
+    `# Qcify Quantum Circuit Generator`,
+    `from qiskit import QuantumCircuit`,
+    ``,
+    `qc = QuantumCircuit(1, 1)`
+  ];
+  gates.forEach(g => {
+    if (g === 'H') lines.push(`qc.h(0)        # Superposition`);
+    else if (g === 'X') lines.push(`qc.x(0)        # Pauli-X flip`);
+    else if (g === 'Y') lines.push(`qc.y(0)        # Pauli-Y flip`);
+    else if (g === 'Z') lines.push(`qc.z(0)        # Pauli-Z phase`);
+    else if (g === 'S') lines.push(`qc.s(0)        # Phase gate`);
+    else if (g === 'T') lines.push(`qc.t(0)        # π/4 Phase gate`);
+    else if (g === 'CNOT') lines.push(`qc.cx(0, 1)    # Controlled-NOT`);
+    else lines.push(`qc.p(3.14, 0)   # Rotation`);
+  });
+  lines.push(`qc.measure(0, 0) # Readout`);
+  return lines.join('\n');
+}
+
+function renderPanelCode() {
+  const code = generateSandboxQiskitCode(circuitGates);
+  return `
+    <div style="width:100%;padding:16px" class="animate-fade-in">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h4 style="margin:0">💻 Auto-Generated Qiskit Code</h4>
+        <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(generateSandboxQiskitCode(circuitGates)); showToast('Code copied to clipboard! 📋', 'default')">
+          Copy Code
+        </button>
+      </div>
+      <pre class="code-block" style="font-size:13px;line-height:1.6;margin:0">${code}</pre>
+    </div>
+  `;
+}
+
+function renderPanelBloch() {
+  const hasH = circuitGates.includes('H');
+  const hasX = circuitGates.includes('X');
+
+  return `
+    <div style="width:100%;padding:16px;text-align:center" class="animate-fade-in">
+      <h4 style="margin-bottom:12px">🌐 State on Bloch Sphere</h4>
+      <div style="margin:0 auto 16px;width:160px;height:160px;position:relative">
+        <svg width="160" height="160" viewBox="-80 -80 160 160">
+          <circle cx="0" cy="0" r="60" fill="none" stroke="rgba(124,92,255,0.3)" stroke-width="2"/>
+          <ellipse cx="0" cy="0" rx="60" ry="16" fill="none" stroke="rgba(34,211,238,0.4)" stroke-dasharray="3 3"/>
+          <line x1="0" y1="-70" x2="0" y2="70" stroke="#A78BFA" stroke-width="1.5"/>
+          <text x="4" y="-64" font-family="'JetBrains Mono'" font-size="10" fill="#38BDF8">|0⟩</text>
+          <text x="4" y="70" font-family="'JetBrains Mono'" font-size="10" fill="#F472B6">|1⟩</text>
+          <line x1="0" y1="0" x2="${hasH ? 58 : 0}" y2="${hasH ? 0 : (hasX ? 58 : -58)}" stroke="#FBBF24" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="${hasH ? 58 : 0}" cy="${hasH ? 0 : (hasX ? 58 : -58)}" r="5" fill="#FBBF24"/>
+        </svg>
+      </div>
+      <div style="font-family:var(--font-code);font-size:12px;color:var(--text-chalk)">
+        State: ${hasH ? '(|0⟩ + |1⟩)/√2 (Equator)' : (hasX ? '|1⟩ (South Pole)' : '|0⟩ (North Pole)')}
+      </div>
+    </div>
+  `;
+}
+
 function switchPanel(tab) {
   sandboxPanelTab = tab;
   document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${tab}`)?.classList.add('active');
-  document.getElementById('panel-content').innerHTML = renderPanelEmpty(tab);
+  const panel = document.getElementById('panel-content');
+  if (!panel) return;
+  if (tab === 'code') {
+    panel.innerHTML = renderPanelCode();
+  } else if (tab === 'bloch') {
+    panel.innerHTML = renderPanelBloch();
+  } else {
+    panel.innerHTML = renderPanelEmpty('results');
+  }
 }
 
 async function runQuantumCircuit() {

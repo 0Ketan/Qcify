@@ -7,7 +7,7 @@ from app.api.routes.mascot import router as mascot_router
 
 app = FastAPI(
     title=settings.app_name,
-    description="QuantumPaws Backend: Real-time Qiskit quantum circuit simulator & Schrö AI Mentor",
+    description="Qcify Backend: Real-time Qiskit quantum circuit simulator & Schrö AI Mentor",
     version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -29,7 +29,7 @@ app.include_router(mascot_router, prefix="/api")
 @app.get("/")
 async def root():
     return {
-        "app": "QuantumPaws Backend",
+        "app": "Qcify Backend",
         "version": "2.0.0",
         "edition": "Human Lab Edition",
         "status": "online",

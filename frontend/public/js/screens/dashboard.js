@@ -1,5 +1,5 @@
 /**
- * QUANTUMPAWS — Newbie Dashboard
+ * Qcify — Newbie Dashboard
  */
 
 const BADGES_DATA = [
@@ -30,8 +30,62 @@ const ROADMAP_NODES = [
 
 function renderDashboard(app, params = {}) {
   const name = window.QP?.playerName || sessionStorage.getItem('qp_name') || 'Explorer';
-  const isUpdated = params.progress40;
-  const progressPct = isUpdated ? 40 : 15;
+  const storedProg = parseInt(sessionStorage.getItem('qp_progress') || (window.QP?.progress ? String(window.QP.progress) : '15'));
+  const progressPct = params.progress40 ? Math.max(storedProg, 40) : storedProg;
+
+  const superProg = typeof BadgesEngine !== 'undefined' ? BadgesEngine.getBadgeProgress('superposition') : { earned: false };
+  const qubitProg = typeof BadgesEngine !== 'undefined' ? BadgesEngine.getBadgeProgress('qubit') : { earned: false };
+
+  const curState = (typeof CurriculumProgress !== 'undefined') ? CurriculumProgress.getState() : { completedLessons: [], unlockedLesson: 0 };
+  const l0Done = (typeof CurriculumProgress !== 'undefined') ? CurriculumProgress.isCompleted(0) : false;
+  const l1Done = (typeof CurriculumProgress !== 'undefined') ? CurriculumProgress.isCompleted(1) : false;
+  const l2Done = (typeof CurriculumProgress !== 'undefined') ? CurriculumProgress.isCompleted(2) : false;
+  const l3Done = (typeof CurriculumProgress !== 'undefined') ? CurriculumProgress.isCompleted(3) : false;
+
+  const isIntermediate = l3Done || sessionStorage.getItem('qp_user_level') === 'intermediate';
+
+  const roadmapNodes = [
+    { 
+      id: 0, 
+      lessonId: 0,
+      title: 'Lesson 0: What, Why & How', 
+      subtitle: l0Done ? 'Completed! 🌟' : 'Light switches, spinning coins & mysteries', 
+      status: 'unlocked', 
+      icon: l0Done ? '✅' : '🪙' 
+    },
+    { 
+      id: 1, 
+      lessonId: 1,
+      title: 'Lesson 1: Classical to Quantum', 
+      subtitle: l1Done ? 'Completed! 🌐' : 'Qubits, amplitudes & Bloch Sphere', 
+      status: (typeof CurriculumProgress !== 'undefined' ? CurriculumProgress.isUnlocked(1) : l0Done) ? 'unlocked' : 'locked', 
+      icon: l1Done ? '✅' : '💡' 
+    },
+    { 
+      id: 2, 
+      lessonId: 2,
+      title: 'Lesson 2: Gates & Entanglement', 
+      subtitle: l2Done ? 'Completed! 🔗' : 'X, H, circuit wires & CNOT', 
+      status: (typeof CurriculumProgress !== 'undefined' ? CurriculumProgress.isUnlocked(2) : l1Done) ? 'unlocked' : 'locked', 
+      icon: l2Done ? '✅' : '🔧' 
+    },
+    { 
+      id: 3, 
+      lessonId: 3,
+      title: 'Lesson 3: Lab & Qiskit Code', 
+      subtitle: l3Done ? 'Graduated! 🎓' : 'Visual composer to live Python code', 
+      status: (typeof CurriculumProgress !== 'undefined' ? CurriculumProgress.isUnlocked(3) : l2Done) ? 'unlocked' : 'locked', 
+      icon: l3Done ? '✅' : '⚡' 
+    },
+    { 
+      id: 4, 
+      lessonId: null,
+      title: 'Circuit Sandbox (Full)', 
+      subtitle: l3Done ? 'UNLOCKED! Unlimited Lab 🧪' : 'Unlocks after Lesson 3 graduation', 
+      status: l3Done ? 'unlocked' : 'locked', 
+      icon: l3Done ? '🔓' : '🔒' 
+    }
+  ];
 
   app.innerHTML = `
     ${buildStarsBg()}
@@ -79,7 +133,7 @@ function renderDashboard(app, params = {}) {
             <span class="text-caption text-muted" style="font-family:var(--font-code)">TAPED LAB SEQUENCE</span>
           </div>
           <div class="roadmap" id="roadmap">
-            ${ROADMAP_NODES.map(node => `
+            ${roadmapNodes.map(node => `
               <div class="roadmap-node" onclick="handleNodeClick(${node.id})" 
                    title="${node.status === 'locked' ? 'Finish previous lesson to unlock' : ''}">
                 <div class="node-circle ${node.status}">
@@ -92,8 +146,8 @@ function renderDashboard(app, params = {}) {
                   </div>
                   <div class="node-subtitle">${node.subtitle}</div>
                   ${node.status === 'unlocked' ? `
-                    <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="event.stopPropagation();navigate('/lesson')">
-                      Start Lesson →
+                    <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="event.stopPropagation();handleNodeAction(${node.id})">
+                      ${node.lessonId !== null ? `Start Lesson ${node.lessonId} →` : `Open Sandbox →`}
                     </button>
                   ` : ''}
                 </div>
@@ -102,23 +156,25 @@ function renderDashboard(app, params = {}) {
           </div>
         </div>
 
-        <!-- Locked Features -->
+        <!-- Locked Features / Sandbox Unlock Banner -->
         <div class="section section-animate">
           <div class="section-title">🔒 Coming as You Progress</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-            <div class="card card-sketch locked clickable" onclick="shakeLockedCard(this)">
-              <div class="lock-icon">🔒</div>
-              <div style="font-size:28px;margin-bottom:12px;filter:grayscale(1)">⚗️</div>
-              <h4 style="color:var(--text-muted)">Circuit Builder</h4>
-              <p class="text-sm text-muted">Drag & drop quantum circuits</p>
-              <div class="badge badge-locked" style="margin-top:12px">Unlocks at 40%</div>
+            <div class="card card-sketch ${l3Done ? 'tape-cyan' : 'locked'} clickable" onclick="${l3Done ? "navigate('/sandbox')" : 'shakeLockedCard(this)'}">
+              <div class="lock-icon">${l3Done ? '🔓' : '🔒'}</div>
+              <div style="font-size:28px;margin-bottom:12px;filter:${l3Done ? 'none' : 'grayscale(1)'}">⚗️</div>
+              <h4 style="color:${l3Done ? 'var(--accent)' : 'var(--text-muted)'}">Circuit Sandbox</h4>
+              <p class="text-sm text-muted">Full multi-qubit interactive composer</p>
+              <div class="badge ${l3Done ? 'badge-success' : 'badge-locked'}" style="margin-top:12px">
+                ${l3Done ? 'UNLOCKED • INTERMEDIATE' : 'Unlocks after Lesson 3'}
+              </div>
             </div>
             <div class="card card-sketch locked clickable tilt-right" onclick="shakeLockedCard(this)">
               <div class="lock-icon">🔒</div>
               <div style="font-size:28px;margin-bottom:12px;filter:grayscale(1)">📐</div>
               <h4 style="color:var(--text-muted)">Advanced Math</h4>
               <p class="text-sm text-muted">Linear algebra & matrix ops</p>
-              <div class="badge badge-locked" style="margin-top:12px">Unlocks at 40%</div>
+              <div class="badge badge-locked" style="margin-top:12px">Unlocks at Topic 3</div>
             </div>
           </div>
         </div>
@@ -139,11 +195,16 @@ function renderDashboard(app, params = {}) {
 
         <!-- Badges -->
         <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
-          <span>🏆 Badges</span>
-          <span style="font-size:11px;font-family:var(--font-code);color:var(--accent-lime)">3/8 UNLOCKED</span>
+          <span style="cursor:pointer" onclick="navigate('/badges')">🏆 Badges</span>
+          <span style="font-size:11px;font-family:var(--font-code);color:var(--accent-lime);cursor:pointer" onclick="navigate('/badges')">
+            ${(typeof BadgesEngine !== 'undefined' ? BadgesEngine.getGlobalStats().totalEarned : 0)}/8 UNLOCKED →
+          </span>
         </div>
         <div class="badges-grid" style="margin-bottom:24px">
-          ${BADGES_DATA.map(b => buildBadgeSlot(b)).join('')}
+          ${(typeof BadgesEngine !== 'undefined'
+              ? BadgesEngine.TOPICS.filter(t => !t.comingSoon).flatMap(t => t.smallBadges)
+              : BADGES_DATA
+            ).map(b => buildBadgeSlot(b)).join('')}
         </div>
 
         <!-- News (Taped Lab Dispatches) -->
@@ -178,17 +239,26 @@ function renderDashboard(app, params = {}) {
   }
 }
 
+function handleNodeAction(nodeId) {
+  if (nodeId >= 0 && nodeId <= 3) {
+    navigate('/lesson', { id: nodeId, step: 0 });
+  } else if (nodeId === 4) {
+    navigate('/sandbox');
+  }
+}
+
 function handleNodeClick(nodeId) {
-  if (nodeId === 1) {
-    navigate('/lesson');
+  const isUnlocked = (typeof CurriculumProgress !== 'undefined')
+    ? (nodeId <= 3 ? CurriculumProgress.isUnlocked(nodeId) : CurriculumProgress.isCompleted(3))
+    : (nodeId === 0);
+
+  if (isUnlocked) {
+    handleNodeAction(nodeId);
   } else {
-    // Locked node - shake
     const nodes = document.querySelectorAll('.roadmap-node');
-    const node = nodes[nodeId - 1];
-    if (node) {
-      shakeElement(node);
-      showToast('Finish Superposition first to unlock this! 🔒', 'default', 2500);
-    }
+    const node = nodes[nodeId];
+    if (node) shakeElement(node);
+    showToast(`Complete previous lesson first to unlock! 🔒`, 'default', 2500);
   }
 }
 

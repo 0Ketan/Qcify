@@ -1,6 +1,5 @@
 /**
-/**
- * QUANTUMPAWS — Gateway & Intermediate Quiz Screen
+ * Qcify — Gateway & Intermediate Quiz Screen
  * Dynamic 8-question generator from 16-question pool (10 Normal, 6 Hard)
  * Ensures every 6-question window contains exactly 2 hard questions.
  */

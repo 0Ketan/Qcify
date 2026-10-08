@@ -1,5 +1,5 @@
 /**
- * QUANTUMPAWS V2 — HUMAN LAB EDITION
+ * Qcify V2 — HUMAN LAB EDITION
  * Schrö Mascot Component (100% Editable Vector, Chalk-Sketch Blackboard Style)
  */
 

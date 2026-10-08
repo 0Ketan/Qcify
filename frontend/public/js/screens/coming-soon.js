@@ -1,5 +1,5 @@
 /**
- * QUANTUMPAWS — Coming Soon Screen
+ * Qcify — Coming Soon Screen
  */
 
 function renderComingSoon(app) {

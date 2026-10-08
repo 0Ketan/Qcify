@@ -1,5 +1,5 @@
 /**
- * QUANTUMPAWS — App Entry Point
+ * Qcify — App Entry Point
  * Registers all routes and initializes the app
  */
 
@@ -11,6 +11,7 @@ Router.register('/lesson', renderLesson);
 Router.register('/quiz', renderQuiz);
 Router.register('/sandbox', renderSandbox);
 Router.register('/profile', renderProfile);
+Router.register('/badges', typeof renderBadgesScreen !== 'undefined' ? renderBadgesScreen : renderProfile);
 Router.register('/coming-soon', renderComingSoon);
 
 // ---- Initialize ----

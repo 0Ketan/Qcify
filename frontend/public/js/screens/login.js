@@ -1,5 +1,5 @@
 /**
- * QUANTUMPAWS — Login Screen
+ * Qcify — Login Screen
  */
 
 function renderLogin(app) {
@@ -10,7 +10,7 @@ function renderLogin(app) {
         <div class="login-logo">
           <span class="logo-paw">🐾</span>
           <div class="logo-name">
-            <span class="font-heading" style="color:var(--text)">Quantum</span><span class="font-heading" style="color:var(--primary)">Paws</span>
+            <span class="font-heading" style="color:var(--text)">Qc</span><span class="font-heading" style="color:var(--primary)">ify</span>
           </div>
           <span style="font-size:24px">⚛️</span>
         </div>

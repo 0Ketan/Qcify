@@ -1,5 +1,5 @@
 /**
- * QUANTUMPAWS — Onboarding Screen
+ * Qcify — Onboarding Screen
  */
 
 let selectedTrack = null;
@@ -14,7 +14,7 @@ function renderOnboarding(app) {
       <div class="onboarding-header">
         <div class="navbar-logo" onclick="navigate('/login')">
           <span>🐾</span>
-          <span>Quantum<span style="color:var(--primary)">Paws</span></span>
+          <span>Qc<span style="color:var(--primary)">ify</span></span>
         </div>
         <div class="onboarding-progress-dots">
           <div class="onboarding-dot done"></div>
