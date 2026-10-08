@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: quantum-composer
+    runtime: static
+    buildCommand: npm install && npm run build
+    publishPath: dist
