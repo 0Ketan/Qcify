@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { Panel, PanelGroup, Separator, useDefaultLayout } from 'react-resizable-panels';
 import { useUserStore, userStore } from '../../state/userStore';
 import { api } from '../../services/api';
-import { GatePalette } from '../../components/CircuitBuilder/GatePalette';
+import { GatePalette, AVAILABLE_GATES } from '../../components/CircuitBuilder/GatePalette';
 import { CircuitGrid } from '../../components/CircuitBuilder/CircuitGrid';
 import { StateHistogram } from '../../components/CircuitBuilder/StateHistogram';
 import { BlochSphereView } from '../../components/CircuitBuilder/BlochSphereView';
 import { SchroMascot } from '../../components/Shared/SchroMascot';
+
+const STORAGE_KEY = 'quantumpaws-composer-layout';
 
 export function SandboxPage() {
   const circuit = useUserStore(s => s.circuit);
@@ -13,7 +16,33 @@ export function SandboxPage() {
   const [backend, setBackend] = useState('qiskit_aer');
   const [shots, setShots] = useState(1024);
   const [isRunning, setIsRunning] = useState(false);
-  const [activeTab, setActiveTab] = useState('probabilities'); // 'probabilities' | 'bloch' | 'qasm'
+  const [activeTab, setActiveTab] = useState('probabilities');
+
+  const { defaultLayout, onLayoutChanged } = useDefaultLayout({
+    id: STORAGE_KEY,
+    panelIds: ['toolbox', 'canvas-group', 'output', 'simulation', 'qasm'],
+    storage: localStorage,
+  });
+
+  const openQasmCode = useCallback(() => {
+    const lines = ['OPENQASM 2.0;', 'include "qelib1.inc";', ''];
+    const num = Math.max(circuit.numQubits, 2);
+    lines.push(`qreg q[${num}];`);
+    lines.push(`creg c[${num}];`);
+    lines.push('');
+    const sorted = [...circuit.gates].sort((a, b) => a.step - b.step || a.target - b.target);
+    sorted.forEach(g => {
+      if (g.control !== null) {
+        lines.push(`cx q[${g.control}], q[${g.target}];`);
+      } else {
+        const gateMap = { H: 'h', X: 'x', Y: 'y', Z: 'z', S: 's', T: 't' };
+        lines.push(`${gateMap[g.name] || g.name.toLowerCase()} q[${g.target}];`);
+      }
+    });
+    lines.push('');
+    for (let i = 0; i < num; i++) lines.push(`measure q[${i}] -> c[${i}];`);
+    return lines.join('\n');
+  }, [circuit.numQubits, circuit.gates]);
 
   const handleRun = async () => {
     setIsRunning(true);
@@ -181,27 +210,38 @@ export function SandboxPage() {
         </div>
       </div>
 
-      {/* 2-Column Lab Workspace */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.6fr) minmax(360px, 1fr)',
-        gap: '24px'
-      }}>
-        {/* Left Side: Palette & Circuit Composer Wire Grid */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <GatePalette
-            selectedGate={selectedGate}
-            onSelectGate={setSelectedGate}
-          />
+      {/* Resizable Quantum Composer Layout */}
+      <PanelGroup
+        direction="horizontal"
+        className="composer-panel-group"
+        style={{ flex: 1, overflow: 'hidden' }}
+      >
+        <Panel id="toolbox" minSize={15} defaultSize={18} order={1} className="composer-panel">
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--surface)', padding: '12px', overflowY: 'auto', gap: '16px' }}>
+            {/* Qubit Controls */}
+            <div style={{ background: 'rgba(20, 27, 45, 0.7)', border: '1px dashed var(--stroke-chalk)', borderRadius: 'var(--radius-imperfect)', padding: '12px' }}>
+              <div className="card-sketch-tag">QUBITS</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                <button onClick={() => useUserStore.setNumQubits(Math.max(1, numQubits - 1))} className="btn btn-ghost btn-sm" disabled={numQubits <= 1} style={{ fontSize: '18px', padding: '4px 8px' }}>−</button>
+                <span style={{ fontFamily: 'var(--font-code)', fontSize: '16px', fontWeight: 700, color: 'var(--accent-lime)', minWidth: '40px', textAlign: 'center' }}>{numQubits}</span>
+                <button onClick={() => useUserStore.setNumQubits(Math.min(4, numQubits + 1))} className="btn btn-ghost btn-sm" disabled={numQubits >= 4} style={{ fontSize: '18px', padding: '4px 8px' }}>+</button>
+              </div>
+            </div>
+            <GatePalette selectedGate={selectedGate} onSelectGate={setSelectedGate} />
+            <div style={{ background: 'rgba(20, 27, 45, 0.5)', border: '1px solid var(--stroke-chalk)', borderRadius: 'var(--radius-imperfect)', padding: '10px', fontSize: '11px', fontFamily: 'var(--font-code)', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+              <div style={{ marginBottom: '6px', color: 'var(--accent)', fontWeight: 700 }}>💡 TIPS</div>
+              <div>• Drag gates onto the grid</div>
+              <div>• Right-click to delete a gate</div>
+              <div>• Click cell with selected gate</div>
+              <div>• CNOT auto-connects control</div>
+            </div>
+          </div>
+        </Panel>
 
-          <CircuitGrid
-            circuit={circuit}
-            selectedGate={selectedGate}
-          />
-        </div>
+        <Separator id="sep-1" className="composer-separator" />
 
-        {/* Right Side: Simulation Results & Statevector Visualization */}
-        <div className="card-sketch tape-cyan" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* Right Side: Simulation Results & QASM */}
+        <div className="card-sketch tape-cyan" style={{ display: 'flex', flexDirection: 'column', gap: '16px', overflow: 'auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className="card-sketch-tag">OBSERVATION CHAMBER</div>
             <div style={{ display: 'flex', gap: '4px' }}>
@@ -263,6 +303,26 @@ export function SandboxPage() {
               <strong>Schrö's Laboratory Note:</strong> Place an H gate on wire 0, then a CNOT targeting wire 1 to witness maximal entanglement! 🐱
             </div>
           </div>
+        </div>
+
+        {/* OpenQASM Output */}
+        <div style={{ marginTop: '16px', overflow: 'auto' }}>
+          <div className="card-sketch-tag" style={{ marginBottom: '12px' }}>📝 OPENQASM CODE</div>
+          <pre style={{
+            fontFamily: 'var(--font-code)',
+            fontSize: '12px',
+            lineHeight: 1.5,
+            color: 'var(--text-chalk)',
+            background: 'rgba(9, 13, 25, 0.6)',
+            border: '1px solid var(--stroke-chalk)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '12px',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            margin: 0
+          }}>
+            {openQasmCode()}
+          </pre>
         </div>
       </div>
     </div>
