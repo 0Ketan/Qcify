@@ -1,6 +1,4 @@
-/**
- * Qcify — Chat / Schrö AI Assistant
- */
+import { sendChatMessage } from './api.js';
 
 const SchroResponses = {
   greetings: [
@@ -45,6 +43,32 @@ function random(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// ---- Quick Ask Chips ----
+function getQuickAskChips(track) {
+  switch (track) {
+    case 'newbie':
+      return [
+        "Explain superposition like a coin",
+        "What is a qubit?",
+        "Why does quantum computing matter?"
+      ];
+    case 'intermediate':
+      return [
+        "What does the H-gate do?",
+        "Explain |+> vs |0>",
+        "How do I make a Bell state in Qiskit?"
+      ];
+    case 'advanced':
+      return [
+        "Show the matrix of the CX gate",
+        "Qiskit tip for debugging circuits",
+        "Explain phase kickback"
+      ];
+    default:
+      return [];
+  }
+}
+
 // ---- Chat State ----
 let chatOpen = false;
 let chatMessages = [];
@@ -57,9 +81,11 @@ function toggleChatDrawer() {
   drawer.classList.toggle('open', chatOpen);
 
   if (chatOpen && chatMessages.length === 0) {
-    // Show greeting
+    // Show greeting with quick-ask chips based on track
+    const track = window.QP?.track ?? 'newbie';
+    const quickChips = getQuickAskChips(track);
     setTimeout(() => {
-      addSchroMessage(random(SchroResponses.greetings));
+      addSchroMessage(random(SchroResponses.greetings), quickChips);
     }, 400);
   }
 }
@@ -79,7 +105,7 @@ function closeNudge() {
   if (nudge) nudge.style.display = 'none';
 }
 
-function sendChatMessage() {
+async function sendChatMessage() {
   const input = document.getElementById('chat-input');
   const text = input?.value.trim();
   if (!text) return;
@@ -94,11 +120,33 @@ function sendChatMessage() {
   // Show typing
   const typingId = addTypingIndicator();
 
-  // Respond after delay
-  setTimeout(() => {
+  try {
+    // Prepare payload
+    const payload = {
+      message: text,
+      history: chatMessages.slice(-20).map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.text
+      })),
+      player_name: window.QP?.playerName ?? '',
+      track: window.QP?.track ?? 'newbie',
+      current_route: window.Router?.currentScreen ?? ''
+    };
+
+    // Call backend API
+    const response = await sendChatMessage(payload);
+
+    // Remove typing indicator
     removeTypingIndicator(typingId);
-    addSchroMessage(getSchroResponse(text));
-  }, 800 + Math.random() * 600);
+
+    // Add assistant message
+    addSchroMessage(response.reply);
+  } catch (err) {
+    console.error('Chat error:', err);
+    removeTypingIndicator(typingId);
+    // Fallback message
+    addSchroMessage("Meow! I'm having a moment of quantum uncertainty... Try again in a sec? 😺");
+  }
 }
 
 function handleChatKey(e) {
